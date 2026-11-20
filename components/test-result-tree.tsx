@@ -26,6 +26,52 @@ interface TestResultTreeProps {
   onReplayStep?: (step: RequestStep) => void
 }
 
+// JSON Syntax Highlighter Helper
+function HighlightedJson({ json }: { json: any }) {
+  if (json === undefined || json === null) {
+    return <span className="text-[#8D9299]">null</span>
+  }
+
+  const jsonString = typeof json === 'string' ? json : JSON.stringify(json, null, 2)
+
+  // Syntax highlight regex
+  // Match keys: "key":
+  // Match string values: "..."
+  // Match numbers: 123
+  // Match booleans/null: true, false, null
+  const formattedHtml = jsonString.replace(
+    /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+    (match) => {
+      if (/^"/.test(match)) {
+        if (/:$/.test(match)) {
+          // Key -> #3574F0
+          return `<span style="color: #3574F0;">${match.slice(0, -1)}</span><span style="color: #DFE1E5;">:</span>`
+        } else {
+          // String value -> #57965C
+          return `<span style="color: #57965C;">${match}</span>`
+        }
+      } else if (/true|false/.test(match)) {
+        // Boolean -> #AF7AC5
+        return `<span style="color: #AF7AC5;">${match}</span>`
+      } else if (/null/.test(match)) {
+        // Null -> #8D9299
+        return `<span style="color: #8D9299;">${match}</span>`
+      } else if (/^-?\d/.test(match)) {
+        // Number -> #CC7832
+        return `<span style="color: #CC7832;">${match}</span>`
+      }
+      return match
+    }
+  )
+
+  return (
+    <pre
+      className="p-3 rounded bg-[#141416] border border-[#393B40] overflow-x-auto text-[11px] leading-relaxed font-mono select-text"
+      dangerouslySetInnerHTML={{ __html: formattedHtml }}
+    />
+  )
+}
+
 export function TestResultTree({ scenario, onReplayStep }: TestResultTreeProps) {
   const [expandedStepId, setExpandedStepId] = useState<string | null>(scenario.steps[0]?.id || null)
   const [activeInspectorTab, setActiveInspectorTab] = useState<'RESPONSE' | 'REQUEST' | 'ASSERTIONS' | 'HEADERS'>('RESPONSE')
@@ -60,13 +106,13 @@ export function TestResultTree({ scenario, onReplayStep }: TestResultTreeProps) 
         {/* Status Metrics */}
         <div className="flex items-center gap-2 text-xs font-mono">
           <span className="text-[#8D9299]">总计 {totalSteps} 步:</span>
-          <span className="inline-flex items-center gap-1 text-[#59A869]">
-            <CheckCircle2 className="w-3.5 h-3.5" />
+          <span className="inline-flex items-center gap-1 text-[#73b584]">
+            <CheckCircle2 className="w-3 h-3" />
             <span>{passedSteps} 通过</span>
           </span>
           {failedSteps > 0 && (
-            <span className="inline-flex items-center gap-1 text-[#E05555]">
-              <XCircle className="w-3.5 h-3.5" />
+            <span className="inline-flex items-center gap-1 text-[#d16568]">
+              <XCircle className="w-3 h-3" />
               <span>{failedSteps} 失败</span>
             </span>
           )}
@@ -116,18 +162,18 @@ export function TestResultTree({ scenario, onReplayStep }: TestResultTreeProps) 
                     </span>
                   </div>
 
-                  {/* Status Indicator */}
+                  {/* Status Indicator (Muted dark style) */}
                   <div className="shrink-0 flex items-center gap-1">
                     {isSkipped ? (
-                      <span className="text-[10px] font-mono px-1 rounded bg-[#393B40] text-[#8D9299]">
+                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#393B40] text-[#8D9299]">
                         SKIPPED
                       </span>
                     ) : isSuccess ? (
-                      <span className="text-[10px] font-mono px-1 rounded bg-[#59A869]/20 text-[#59A869] border border-[#59A869]/30">
+                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#1e3a27] text-[#73b584] border border-[#2e5238]">
                         {step.status}
                       </span>
                     ) : (
-                      <span className="text-[10px] font-mono px-1 rounded bg-[#E05555]/20 text-[#E05555] border border-[#E05555]/30">
+                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#3d2122] text-[#d16568] border border-[#522d2f]">
                         {step.status}
                       </span>
                     )}
@@ -142,7 +188,7 @@ export function TestResultTree({ scenario, onReplayStep }: TestResultTreeProps) 
                 {/* Bottom Row: Duration + Assertions Count */}
                 <div className="flex items-center justify-between text-[10px] font-mono text-[#8D9299]">
                   <div className="flex items-center gap-1">
-                    <ShieldCheck className={`w-3 h-3 ${isSuccess ? 'text-[#59A869]' : 'text-[#E05555]'}`} />
+                    <ShieldCheck className={`w-3 h-3 ${isSuccess ? 'text-[#73b584]' : 'text-[#d16568]'}`} />
                     <span>
                       {step.assertions.filter((a) => a.passed).length}/{step.assertions.length} 断言
                     </span>
@@ -195,7 +241,7 @@ export function TestResultTree({ scenario, onReplayStep }: TestResultTreeProps) 
                   }`}
                 >
                   <span>断言</span>
-                  <span className={`text-[10px] px-1 rounded ${selectedStep.isSuccess ? 'bg-[#59A869]/20 text-[#59A869]' : 'bg-[#E05555]/20 text-[#E05555]'}`}>
+                  <span className={`text-[10px] px-1 rounded ${selectedStep.isSuccess ? 'bg-[#1e3a27] text-[#73b584]' : 'bg-[#3d2122] text-[#d16568]'}`}>
                     {selectedStep.assertions.length}
                   </span>
                 </button>
@@ -226,13 +272,13 @@ export function TestResultTree({ scenario, onReplayStep }: TestResultTreeProps) 
 
             {/* Inspector Content View */}
             <div className="flex-1 p-3 overflow-y-auto select-text font-mono text-xs">
-              {/* Response Tab */}
+              {/* Response Tab with Syntax Highlighting */}
               {activeInspectorTab === 'RESPONSE' && (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-[11px] text-[#8D9299]">
                     <div className="flex items-center gap-2">
                       <span>HTTP 状态: </span>
-                      <span className={`font-bold ${selectedStep.isSuccess ? 'text-[#59A869]' : 'text-[#E05555]'}`}>
+                      <span className={`font-bold ${selectedStep.isSuccess ? 'text-[#73b584]' : 'text-[#d16568]'}`}>
                         {selectedStep.status} {selectedStep.statusText}
                       </span>
                       <span>• 耗时: {selectedStep.duration}ms</span>
@@ -242,18 +288,16 @@ export function TestResultTree({ scenario, onReplayStep }: TestResultTreeProps) 
                       onClick={() => handleCopyJson(selectedStep.responseBody, 'resp')}
                       className="flex items-center gap-1 text-[11px] text-[#8D9299] hover:text-[#DFE1E5]"
                     >
-                      {copiedKey === 'resp' ? <Check className="w-3 h-3 text-[#59A869]" /> : <Copy className="w-3 h-3" />}
+                      {copiedKey === 'resp' ? <Check className="w-3 h-3 text-[#73b584]" /> : <Copy className="w-3 h-3" />}
                       <span>{copiedKey === 'resp' ? '已复制' : '复制 JSON'}</span>
                     </button>
                   </div>
 
-                  <pre className="p-2.5 rounded bg-[#141416] border border-[#393B40] text-[#DFE1E5] overflow-x-auto text-[11px] leading-relaxed">
-                    {JSON.stringify(selectedStep.responseBody, null, 2)}
-                  </pre>
+                  <HighlightedJson json={selectedStep.responseBody} />
                 </div>
               )}
 
-              {/* Request Tab */}
+              {/* Request Tab with Syntax Highlighting */}
               {activeInspectorTab === 'REQUEST' && (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-[11px] text-[#8D9299]">
@@ -265,16 +309,14 @@ export function TestResultTree({ scenario, onReplayStep }: TestResultTreeProps) 
                         onClick={() => handleCopyJson(selectedStep.requestBody, 'req')}
                         className="flex items-center gap-1 text-[11px] text-[#8D9299] hover:text-[#DFE1E5]"
                       >
-                        {copiedKey === 'req' ? <Check className="w-3 h-3 text-[#59A869]" /> : <Copy className="w-3 h-3" />}
+                        {copiedKey === 'req' ? <Check className="w-3 h-3 text-[#73b584]" /> : <Copy className="w-3 h-3" />}
                         <span>复制 Body</span>
                       </button>
                     )}
                   </div>
 
                   {selectedStep.requestBody ? (
-                    <pre className="p-2.5 rounded bg-[#141416] border border-[#393B40] text-[#59A869] overflow-x-auto text-[11px]">
-                      {JSON.stringify(selectedStep.requestBody, null, 2)}
-                    </pre>
+                    <HighlightedJson json={selectedStep.requestBody} />
                   ) : (
                     <div className="p-4 rounded bg-[#141416] border border-[#393B40] text-center text-[#8D9299]">
                       该请求为 GET/无 Body 请求，参数已包含在 URL Query 中
@@ -296,8 +338,8 @@ export function TestResultTree({ scenario, onReplayStep }: TestResultTreeProps) 
                         key={aIdx}
                         className={`p-2.5 rounded border ${
                           assertion.passed
-                            ? 'bg-[#59A869]/10 border-[#59A869]/30 text-[#DFE1E5]'
-                            : 'bg-[#E05555]/10 border-[#E05555]/30 text-[#DFE1E5]'
+                            ? 'bg-[#1e3a27]/30 border-[#2e5238] text-[#DFE1E5]'
+                            : 'bg-[#3d2122]/30 border-[#522d2f] text-[#DFE1E5]'
                         }`}
                       >
                         <div className="flex items-center justify-between mb-1">
@@ -305,7 +347,7 @@ export function TestResultTree({ scenario, onReplayStep }: TestResultTreeProps) 
                             {assertion.rule}
                           </span>
                           <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded ${
-                            assertion.passed ? 'bg-[#59A869] text-white' : 'bg-[#E05555] text-white'
+                            assertion.passed ? 'bg-[#1e3a27] text-[#73b584] border border-[#2e5238]' : 'bg-[#3d2122] text-[#d16568] border border-[#522d2f]'
                           }`}>
                             {assertion.passed ? 'PASSED ✓' : 'FAILED ✕'}
                           </span>
@@ -318,7 +360,7 @@ export function TestResultTree({ scenario, onReplayStep }: TestResultTreeProps) 
                           </div>
                           <div>
                             <span className="text-[#8D9299]">实际值 (Actual): </span>
-                            <span className={assertion.passed ? 'text-[#59A869] font-bold' : 'text-[#E05555] font-bold'}>
+                            <span className={assertion.passed ? 'text-[#73b584] font-bold' : 'text-[#d16568] font-bold'}>
                               {assertion.actual}
                             </span>
                           </div>
@@ -349,7 +391,7 @@ export function TestResultTree({ scenario, onReplayStep }: TestResultTreeProps) 
                     <div className="p-2 rounded bg-[#141416] border border-[#393B40] space-y-1 text-[11px]">
                       {Object.entries(selectedStep.responseHeaders).map(([k, v]) => (
                         <div key={k} className="flex gap-2">
-                          <span className="text-[#59A869]">{k}:</span>
+                          <span className="text-[#57965C]">{k}:</span>
                           <span className="text-[#DFE1E5] break-all">{v}</span>
                         </div>
                       ))}

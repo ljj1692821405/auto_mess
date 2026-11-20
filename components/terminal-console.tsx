@@ -13,7 +13,8 @@ import {
   Code,
   Sliders,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Filter
 } from 'lucide-react'
 import { Scenario } from '@/lib/mock-data'
 
@@ -25,6 +26,7 @@ interface TerminalConsoleProps {
 }
 
 type TabType = 'LOGS' | 'CURL' | 'ENV'
+type LogFilterType = 'ALL' | 'INFO' | 'DEBUG' | 'SUCCESS' | 'ERROR'
 
 export function TerminalConsole({
   scenario,
@@ -33,6 +35,7 @@ export function TerminalConsole({
   onOpenWhaleFix
 }: TerminalConsoleProps) {
   const [activeTab, setActiveTab] = useState<TabType>('LOGS')
+  const [logFilter, setLogFilter] = useState<LogFilterType>('ALL')
   const [copied, setCopied] = useState(false)
   const [autoScroll, setAutoScroll] = useState(true)
   const [displayedLogs, setDisplayedLogs] = useState(scenario.logs)
@@ -75,7 +78,7 @@ export function TerminalConsole({
   const handleCopy = () => {
     let textToCopy = ''
     if (activeTab === 'LOGS') {
-      textToCopy = displayedLogs.map((l) => `[${l.time}] [${l.level}] ${l.message}`).join('\n')
+      textToCopy = filteredLogs.map((l) => `[${l.time}] [${l.level}] ${l.message}`).join('\n')
     } else if (activeTab === 'CURL') {
       textToCopy = scenario.curl
     } else {
@@ -102,21 +105,29 @@ export function TerminalConsole({
 
   const hasError = scenario.status === 'FAILED'
 
+  // Filter logs by level
+  const filteredLogs = displayedLogs.filter((log) => {
+    if (logFilter === 'ALL') return true
+    return log.level === logFilter
+  })
+
+  const filterChips: LogFilterType[] = ['ALL', 'INFO', 'DEBUG', 'SUCCESS', 'ERROR']
+
   return (
     <div className="h-full flex flex-col bg-[#141416] select-none border-b border-[#393B40]">
-      {/* Terminal Title Bar / Tabs */}
-      <div className="h-10 px-3 bg-[#1E1F22] border-b border-[#393B40] flex items-center justify-between shrink-0">
+      {/* Terminal Title Bar / Tabs & Filter Chips */}
+      <div className="h-10 px-3 bg-[#1E1F22] border-b border-[#393B40] flex items-center justify-between shrink-0 gap-2 overflow-x-auto">
         {/* Left Tabs */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 shrink-0">
           <button
             onClick={() => setActiveTab('LOGS')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-t text-xs font-mono font-medium transition-colors border-b-2 ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-t text-xs font-mono font-medium transition-colors border-b-2 whitespace-nowrap ${
               activeTab === 'LOGS'
                 ? 'bg-[#141416] text-[#DFE1E5] border-[#3574F0]'
                 : 'text-[#8D9299] hover:text-[#DFE1E5] border-transparent'
             }`}
           >
-            <div className={`w-2 h-2 rounded-full ${isRunning ? 'bg-[#E5A84B] animate-ping' : hasError ? 'bg-[#E05555]' : 'bg-[#59A869]'}`} />
+            <div className={`w-2 h-2 rounded-full ${isRunning ? 'bg-[#E5A84B] animate-ping' : hasError ? 'bg-[#d16568]' : 'bg-[#73b584]'}`} />
             <span>实时执行日志</span>
             {displayedLogs.length > 0 && (
               <span className="text-[10px] text-[#8D9299]">({displayedLogs.length})</span>
@@ -125,7 +136,7 @@ export function TerminalConsole({
 
           <button
             onClick={() => setActiveTab('CURL')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-t text-xs font-mono font-medium transition-colors border-b-2 ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-t text-xs font-mono font-medium transition-colors border-b-2 whitespace-nowrap ${
               activeTab === 'CURL'
                 ? 'bg-[#141416] text-[#DFE1E5] border-[#3574F0]'
                 : 'text-[#8D9299] hover:text-[#DFE1E5] border-transparent'
@@ -137,7 +148,7 @@ export function TerminalConsole({
 
           <button
             onClick={() => setActiveTab('ENV')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-t text-xs font-mono font-medium transition-colors border-b-2 ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-t text-xs font-mono font-medium transition-colors border-b-2 whitespace-nowrap ${
               activeTab === 'ENV'
                 ? 'bg-[#141416] text-[#DFE1E5] border-[#3574F0]'
                 : 'text-[#8D9299] hover:text-[#DFE1E5] border-transparent'
@@ -148,8 +159,35 @@ export function TerminalConsole({
           </button>
         </div>
 
+        {/* Center: Minimal Filter Chips (Requirement 5) */}
+        {activeTab === 'LOGS' && (
+          <div className="flex items-center gap-1 shrink-0 font-mono text-[11px]">
+            {filterChips.map((chip) => {
+              const isSelected = logFilter === chip
+              let activeColor = 'text-[#3574F0]'
+              if (chip === 'SUCCESS') activeColor = 'text-[#73b584]'
+              if (chip === 'ERROR') activeColor = 'text-[#d16568]'
+              if (chip === 'DEBUG') activeColor = 'text-[#AF7AC5]'
+
+              return (
+                <button
+                  key={chip}
+                  onClick={() => setLogFilter(chip)}
+                  className={`px-2 py-0.5 rounded transition-all font-mono font-medium text-[10px] ${
+                    isSelected
+                      ? `bg-[#3574F0]/15 ${activeColor} border border-[#3574F0] shadow-sm`
+                      : 'bg-[#1E1F22] text-[#8D9299] border border-[#393B40] hover:text-[#DFE1E5] hover:border-[#4E5157]'
+                  }`}
+                >
+                  [{chip}]
+                </button>
+              )
+            })}
+          </div>
+        )}
+
         {/* Right Tools */}
-        <div className="flex items-center gap-2 text-xs">
+        <div className="flex items-center gap-1.5 text-xs shrink-0">
           {isRunning && (
             <div className="flex items-center gap-1.5 text-xs font-mono text-[#E5A84B] mr-2">
               <RotateCcw className="w-3 h-3 animate-spin" />
@@ -160,10 +198,10 @@ export function TerminalConsole({
           {hasError && onOpenWhaleFix && (
             <button
               onClick={onOpenWhaleFix}
-              className="flex items-center gap-1 px-2 py-0.8 rounded bg-[#3574F0]/20 hover:bg-[#3574F0]/30 border border-[#3574F0]/40 text-[#3574F0] text-[11px] font-medium transition-colors"
+              className="flex items-center gap-1 px-2 py-0.5 rounded bg-[#3574F0]/20 hover:bg-[#3574F0]/30 border border-[#3574F0]/40 text-[#3574F0] text-[11px] font-medium transition-colors"
             >
               <Sparkles className="w-3 h-3" />
-              <span>AI 诊断原因</span>
+              <span>AI 诊断</span>
             </button>
           )}
 
@@ -184,12 +222,12 @@ export function TerminalConsole({
             className="p-1 rounded hover:bg-[#2B2D30] text-[#8D9299] hover:text-[#DFE1E5] transition-colors"
             title="复制当前控制台内容"
           >
-            {copied ? <Check className="w-3.5 h-3.5 text-[#59A869]" /> : <Copy className="w-3.5 h-3.5" />}
+            {copied ? <Check className="w-3.5 h-3.5 text-[#73b584]" /> : <Copy className="w-3.5 h-3.5" />}
           </button>
 
           <button
             onClick={handleClearLogs}
-            className="p-1 rounded hover:bg-[#2B2D30] text-[#8D9299] hover:text-[#E05555] transition-colors"
+            className="p-1 rounded hover:bg-[#2B2D30] text-[#8D9299] hover:text-[#d16568] transition-colors"
             title="清空日志"
           >
             <Trash2 className="w-3.5 h-3.5" />
@@ -204,21 +242,25 @@ export function TerminalConsole({
       >
         {activeTab === 'LOGS' && (
           <div className="space-y-1">
-            {displayedLogs.length === 0 ? (
+            {filteredLogs.length === 0 ? (
               <div className="text-[#8D9299] py-4 text-center font-mono text-xs">
-                {isRunning ? '正在连接测试沙箱网关，拉取实时日志流...' : '控制台无日志输出，点击上方 "运行" 启动用例'}
+                {displayedLogs.length > 0
+                  ? `在 [${logFilter}] 过滤条件下无日志，可点击 [ALL] 查看全部日志`
+                  : isRunning
+                  ? '正在连接测试沙箱网关，拉取实时日志流...'
+                  : '控制台无日志输出，点击下方 "运行选中场景" 启动用例'}
               </div>
             ) : (
-              displayedLogs.map((log, index) => {
+              filteredLogs.map((log, index) => {
                 let badgeClass = 'text-[#3574F0]'
                 let messageClass = 'text-[#DFE1E5]'
 
                 if (log.level === 'SUCCESS') {
-                  badgeClass = 'text-[#59A869]'
-                  messageClass = 'text-[#59A869]'
+                  badgeClass = 'text-[#73b584]'
+                  messageClass = 'text-[#73b584]'
                 } else if (log.level === 'ERROR') {
-                  badgeClass = 'text-[#E05555] font-bold'
-                  messageClass = 'text-[#E05555]'
+                  badgeClass = 'text-[#d16568] font-bold'
+                  messageClass = 'text-[#d16568]'
                 } else if (log.level === 'WARN') {
                   badgeClass = 'text-[#E5A84B]'
                   messageClass = 'text-[#E5A84B]'
@@ -253,7 +295,7 @@ export function TerminalConsole({
         )}
 
         {activeTab === 'CURL' && (
-          <div className="p-2 bg-[#1E1F22] rounded border border-[#393B40] text-[#59A869]">
+          <div className="p-2 bg-[#1E1F22] rounded border border-[#393B40] text-[#57965C]">
             <pre className="whitespace-pre-wrap break-all">{scenario.curl}</pre>
           </div>
         )}

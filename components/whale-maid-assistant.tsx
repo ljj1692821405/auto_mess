@@ -153,28 +153,20 @@ export default async function runWhaleTask(context) {
           </div>
         )}
 
-        {/* 80px Floating Character Button with Glowing Blue Shadow */}
+        {/* 80px Floating Transparent Whale Maid Character with Glowing Blue Shadow */}
         <div
           onClick={onToggle}
           onMouseEnter={() => setShowTooltip(true)}
           onMouseLeave={() => setShowTooltip(false)}
           className="relative cursor-pointer transition-transform duration-200 hover:scale-105 active:scale-95 group"
         >
-          {/* Glowing Aura Ring */}
-          <div className="absolute inset-0 rounded-full bg-[#3574F0]/30 blur-md group-hover:bg-[#3574F0]/50 transition-all animate-pulse-ring" />
-
-          {/* 80px Whale Maid Character Frame */}
-          <div className="w-20 h-20 rounded-2xl bg-gradient-to-b from-[#2B2D30] to-[#1E1F22] border-2 border-[#3574F0] shadow-[0_0_15px_rgba(53,116,240,0.5)] overflow-hidden flex items-center justify-center p-1 animate-whale-float">
+          {/* Direct Transparent Mascot with Floating Animation and Blue Drop Shadow */}
+          <div className="w-20 h-20 flex items-center justify-center animate-whale-float drop-shadow-[0_0_12px_rgba(53,116,240,0.7)] hover:drop-shadow-[0_0_18px_rgba(53,116,240,0.9)] transition-all">
             <img
               src={WHALE_MAID_AVATAR}
               alt="鲸鱼娘助手"
-              className="w-full h-full object-contain"
+              className="w-full h-full object-contain pointer-events-none"
             />
-          </div>
-
-          {/* Online Indicator Badge */}
-          <div className="absolute -top-1 -right-1 flex items-center justify-center px-1.5 py-0.5 rounded-full bg-[#3574F0] text-white text-[9px] font-mono font-bold shadow-md border border-[#1E1F22]">
-            AI
           </div>
         </div>
       </div>

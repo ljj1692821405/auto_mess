@@ -126,11 +126,11 @@ export function ExportReportModal({ isOpen, onClose, scenarios }: ExportReportMo
                   <div className="flex items-center gap-3 font-mono">
                     <span className="text-[10px] text-[#8D9299]">{s.duration}ms</span>
                     {s.status === 'SUCCESS' ? (
-                      <span className="px-2 py-0.5 rounded bg-[#59A869]/20 text-[#59A869] border border-[#59A869]/30 text-[10px]">
+                      <span className="px-2 py-0.5 rounded bg-[#1e3a27] text-[#73b584] border border-[#2e5238] text-[10px]">
                         200 OK
                       </span>
                     ) : (
-                      <span className="px-2 py-0.5 rounded bg-[#E05555]/20 text-[#E05555] border border-[#E05555]/30 text-[10px]">
+                      <span className="px-2 py-0.5 rounded bg-[#3d2122] text-[#d16568] border border-[#522d2f] text-[10px]">
                         {s.statusCode} FAIL
                       </span>
                     )}

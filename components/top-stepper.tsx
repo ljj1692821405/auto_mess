@@ -11,11 +11,13 @@ import {
   FileSpreadsheet,
   Globe,
   CheckCircle2,
+  XCircle,
   AlertTriangle,
   Clock,
   Sparkles,
   ChevronRight,
-  ShieldCheck
+  ShieldCheck,
+  Activity
 } from 'lucide-react'
 
 interface TopStepperProps {
@@ -83,7 +85,7 @@ export function TopStepper({
                     isActive
                       ? 'bg-[#3574F0] text-white'
                       : isDone
-                      ? 'bg-[#59A869]/20 text-[#59A869] border border-[#59A869]/40'
+                      ? 'bg-[#1e3a27] text-[#73b584] border border-[#2e5238]'
                       : 'bg-[#1E1F22] text-[#8D9299] border border-[#393B40]'
                   }`}
                 >
@@ -113,7 +115,7 @@ export function TopStepper({
       </div>
 
       {/* Right Controls & Quick Execution Stats */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2.5">
         {/* Environment Badge Dropdown */}
         <div className="relative">
           <button
@@ -155,24 +157,43 @@ export function TopStepper({
           )}
         </div>
 
-        {/* Quick Stats Summary */}
-        <div className="hidden lg:flex items-center gap-2 px-2.5 py-1 rounded bg-[#1E1F22] border border-[#393B40] text-xs font-mono">
-          <div className="flex items-center gap-1 text-[#59A869]" title="成功通过用例">
-            <CheckCircle2 className="w-3.5 h-3.5" />
+        {/* Quick Stats Summary - Redesigned with separated gentle pills and small soft icons */}
+        <div className="hidden lg:flex items-center gap-1.5 select-none">
+          {/* Success Count */}
+          <div
+            className="flex items-center gap-1 px-2 py-1 rounded bg-[#1E1F22] border border-[#393B40] text-[11px] font-mono text-[#73b584]"
+            title="成功通过场景"
+          >
+            <CheckCircle2 className="w-3 h-3 text-[#73b584] shrink-0" />
             <span>{successCount}</span>
           </div>
-          <span className="text-[#393B40]">/</span>
-          <div className="flex items-center gap-1 text-[#E05555]" title="失败异常用例">
-            <AlertTriangle className="w-3.5 h-3.5" />
+
+          {/* Failed Count */}
+          <div
+            className="flex items-center gap-1 px-2 py-1 rounded bg-[#1E1F22] border border-[#393B40] text-[11px] font-mono text-[#d16568]"
+            title="失败异常场景"
+          >
+            <XCircle className="w-3 h-3 text-[#d16568] shrink-0" />
             <span>{failedCount}</span>
           </div>
-          <span className="text-[#393B40]">|</span>
-          <div className="flex items-center gap-1 text-[#DFE1E5]" title="平均响应耗时">
-            <Clock className="w-3.5 h-3.5 text-[#8D9299]" />
+
+          {/* Average Latency */}
+          <div
+            className="flex items-center gap-1 px-2 py-1 rounded bg-[#1E1F22] border border-[#393B40] text-[11px] font-mono text-[#A8ABB0]"
+            title="平均接口耗时"
+          >
+            <Clock className="w-3 h-3 text-[#8D9299] shrink-0" />
             <span>{avgDuration}ms</span>
           </div>
-          <span className="text-[#393B40]">|</span>
-          <span className="text-[#3574F0] font-bold">{passRate}%</span>
+
+          {/* Pass Rate */}
+          <div
+            className="flex items-center gap-1 px-2 py-1 rounded bg-[#1E1F22] border border-[#393B40] text-[11px] font-mono font-medium text-[#3574F0]"
+            title="场景通过率"
+          >
+            <Activity className="w-3 h-3 text-[#3574F0] shrink-0" />
+            <span>{passRate}%</span>
+          </div>
         </div>
 
         {/* Action: Run All Scenarios */}
@@ -199,7 +220,7 @@ export function TopStepper({
           onClick={onExportReport}
           className="flex items-center gap-1.5 px-2.5 py-1.5 rounded bg-[#1E1F22] hover:bg-[#25272B] border border-[#393B40] hover:border-[#3574F0] text-[#DFE1E5] text-xs font-medium transition-all"
         >
-          <FileSpreadsheet className="w-3.5 h-3.5 text-[#59A869]" />
+          <FileSpreadsheet className="w-3.5 h-3.5 text-[#73b584]" />
           <span>报告视图</span>
         </button>
       </div>

@@ -123,8 +123,8 @@ export function ScenarioList({
               onClick={() => setFilterType('SUCCESS')}
               className={`px-2.5 py-1 rounded text-xs font-medium flex items-center gap-1 transition-all ${
                 filterType === 'SUCCESS'
-                  ? 'bg-[#59A869] text-white shadow-sm'
-                  : 'bg-[#1E1F22] text-[#59A869] hover:bg-[#59A869]/10 border border-[#393B40]'
+                  ? 'bg-[#1e3a27] text-[#73b584] border border-[#2e5238] shadow-sm'
+                  : 'bg-[#1E1F22] text-[#73b584] hover:bg-[#1e3a27]/30 border border-[#393B40]'
               }`}
             >
               <CheckCircle2 className="w-3 h-3" />
@@ -135,8 +135,8 @@ export function ScenarioList({
               onClick={() => setFilterType('FAILED')}
               className={`px-2.5 py-1 rounded text-xs font-medium flex items-center gap-1 transition-all ${
                 filterType === 'FAILED'
-                  ? 'bg-[#E05555] text-white shadow-sm'
-                  : 'bg-[#1E1F22] text-[#E05555] hover:bg-[#E05555]/10 border border-[#393B40]'
+                  ? 'bg-[#3d2122] text-[#d16568] border border-[#522d2f] shadow-sm'
+                  : 'bg-[#1E1F22] text-[#d16568] hover:bg-[#3d2122]/30 border border-[#393B40]'
               }`}
             >
               <XCircle className="w-3 h-3" />
@@ -203,7 +203,7 @@ export function ScenarioList({
                     : 'bg-[#2B2D30] border-[#393B40] hover:border-[#3574F0] hover:bg-[#2B2D30]/90'
                 }`}
               >
-                {/* Header: Code & Status Badge */}
+                {/* Header: Code & Status Badge (Muted dark style) */}
                 <div className="flex items-center justify-between mb-1.5">
                   <div className="flex items-center gap-1.5">
                     <span className="font-mono text-xs font-bold text-[#DFE1E5] group-hover:text-white">
@@ -214,15 +214,15 @@ export function ScenarioList({
                     </span>
                   </div>
 
-                  {/* Status Badge */}
+                  {/* Status Badge with Muted #1e3a27 / #3d2122 */}
                   <div className="flex items-center gap-1">
                     {isSuccess ? (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#59A869]/20 text-[#59A869] border border-[#59A869]/30">
+                      <span className="inline-flex items-center gap-1 text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#1e3a27] text-[#73b584] border border-[#2e5238]">
                         <CheckCircle2 className="w-3 h-3" />
                         <span>{scenario.statusCode} OK</span>
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#E05555]/20 text-[#E05555] border border-[#E05555]/30">
+                      <span className="inline-flex items-center gap-1 text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#3d2122] text-[#d16568] border border-[#522d2f]">
                         <XCircle className="w-3 h-3" />
                         <span>{scenario.statusCode} ERR</span>
                       </span>
@@ -241,7 +241,7 @@ export function ScenarioList({
                     <div className="w-16 h-1.5 rounded-full bg-[#1E1F22] overflow-hidden">
                       <div
                         className={`h-full rounded-full transition-all ${
-                          isSuccess ? 'bg-[#59A869]' : 'bg-[#E05555]'
+                          isSuccess ? 'bg-[#73b584]' : 'bg-[#d16568]'
                         }`}
                         style={{
                           width: `${(scenario.passedStepsCount / scenario.stepsCount) * 100}%`
