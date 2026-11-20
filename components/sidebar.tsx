@@ -16,6 +16,7 @@ import {
   Cpu
 } from 'lucide-react'
 import { WHALE_MAID_AVATAR } from '@/lib/mock-data'
+import { TransparentWhaleImage } from '@/components/transparent-whale-image'
 
 interface SidebarProps {
   currentTab: string
@@ -157,7 +158,7 @@ export function Sidebar({ currentTab, onSelectTab, onOpenWhaleAssistant }: Sideb
           >
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-full bg-[#1E1F22] border border-[#3574F0]/40 overflow-hidden flex items-center justify-center shrink-0">
-                <img
+                <TransparentWhaleImage
                   src={WHALE_MAID_AVATAR}
                   alt="鲸鱼娘助手"
                   className="w-full h-full object-cover object-top"

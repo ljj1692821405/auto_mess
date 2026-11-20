@@ -19,6 +19,7 @@ import {
   ShieldCheck
 } from 'lucide-react'
 import { WHALE_MAID_AVATAR } from '@/lib/mock-data'
+import { TransparentWhaleImage } from '@/components/transparent-whale-image'
 
 interface WhaleMaidAssistantProps {
   isOpen: boolean
@@ -158,11 +159,11 @@ export default async function runWhaleTask(context) {
           onClick={onToggle}
           onMouseEnter={() => setShowTooltip(true)}
           onMouseLeave={() => setShowTooltip(false)}
-          className="relative cursor-pointer transition-transform duration-200 hover:scale-105 active:scale-95 group"
+          className="relative cursor-pointer transition-transform duration-200 hover:scale-110 active:scale-95 group"
         >
           {/* Direct Transparent Mascot with Floating Animation and Blue Drop Shadow */}
-          <div className="w-20 h-20 flex items-center justify-center animate-whale-float drop-shadow-[0_0_12px_rgba(53,116,240,0.7)] hover:drop-shadow-[0_0_18px_rgba(53,116,240,0.9)] transition-all">
-            <img
+          <div className="w-20 h-24 flex items-center justify-center animate-whale-float drop-shadow-[0_0_14px_rgba(53,116,240,0.85)] hover:drop-shadow-[0_0_22px_rgba(53,116,240,1)] transition-all">
+            <TransparentWhaleImage
               src={WHALE_MAID_AVATAR}
               alt="鲸鱼娘助手"
               className="w-full h-full object-contain pointer-events-none"
